@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <context:component-scan base-package="net.therap"/>
+    <context:property-placeholder location="classpath:app.properties"/>
+
+    <bean class="net.therap.config.DbConfig" id="config"/>
+
+    <!-- Config for oracle database -->
+
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="packagesToScan">
+            <list>
+                <value>net.therap.db</value>
+                <value>net.therap.model.ar</value>
+            </list>
+        </property>
+        <property name="dataSource" ref="therapDataSource"/>
+        <property name="persistenceUnitName" value="therap"/>
+    </bean>
+
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+    </bean>
+
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+
+
+    <bean id="activeProvider" factory-bean="therapCommonDataProvider" factory-method="getActiveProvider"/>
+
+    <bean id="activeCountry" factory-bean="therapCommonDataProvider" factory-method="getCountry"/>
+</beans>
